@@ -1,0 +1,42 @@
+\scheme{(require (planet "sound.ss" ("kazzmir" "allegro.plt")))}
+
+Function list
+
+\makelink{load-sound}
+\makelink{destroy-sound}
+\makelink{play-sound}
+\makelink{play-sound-looped}
+\makelink{stop-sound}
+
+\mark{load-sound}
+\function{(load-sound filename)}{sound}
+
+Create a sound object from a filename. Available extensions for filenames are
+  .wav
+  .voc
+
+\mark{destroy-sound}
+\function{(destroy-sound sound)}{void}
+
+Destroy a sound object. Sound objects are not garbage collected, you must destroy them yourself.
+
+\mark{play-sound}
+\function{(play-sound sound [volume] [pan] [frequency])}{void}
+
+Plays a sound.\newline\newline
+  \var{sound} - sound object\newline
+  \var{volume} - 0 <= \var{volume} <= 255\newline
+  \var{pan} - 0 <= \var{pan} <= 255. Pan determines which speaker the sound will come out of. 0 is left, 255 is right. 128 is in the middle.\newline
+  \var{frequency} - What speed to play the sound at. 1000 is the default, less is slower, and more is faster.
+
+\mark{play-sound-looped}
+\function{(play-sound-looped sound [volume] [pan] [frequency])}{void}
+
+Exactly like \link{play-sound} but the sound will loop until \link{stop-sound} is called on \var{sound}.
+
+\mark{stop-sound}
+\function{(stop-sound sound)}{void}
+
+Stops playing \var{sound} if it is currently playing. There is no effect if \var{sound} is not currently playing.
+
+

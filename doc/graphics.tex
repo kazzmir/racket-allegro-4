@@ -1,0 +1,949 @@
+\newcommand{\translucent}[1]{Like \link{#1} but use \var{red}, \var{blue}, \var{green}, and \var{alpha} to set the translucency. See \link{set-trans-blender!} and \link{set-drawing-mode-translucent!}.}
+\newcommand{\screen}[1]{Exactly like \link{#1} except the first argument is implicitly \link{screen}.}
+
+\scheme{(require (planet "image.ss" ("kazzmir" "allegro.plt")))}
+
+Function list
+
+\makelink{arc-screen/translucent}
+\makelink{arc-screen}
+\makelink{arc/translucent}
+\makelink{arc}
+\makelink{calculate-spline}
+\makelink{circle-fill-screen/translucent}
+\makelink{circle-fill-screen}
+\makelink{circle-fill/translucent}
+\makelink{circle-fill}
+\makelink{circle-screen/translucent}
+\makelink{circle-screen}
+\makelink{circle/translucent}
+\makelink{circle}
+\makelink{clear-screen}
+\makelink{clear}
+\makelink{color}
+\makelink{copy-masked-screen}
+\makelink{copy-masked-stretch-screen}
+\makelink{copy-masked-stretch}
+\makelink{copy-masked}
+\makelink{copy-screen}
+\makelink{copy-stretch-screen}
+\makelink{copy-stretch}
+\makelink{copy}
+\makelink{create-from-file}
+\makelink{create-sub-screen}
+\makelink{create-sub}
+\makelink{create}
+\makelink{destroy}
+\makelink{draw-character-screen}
+\makelink{draw-character}
+\makelink{draw-gouraud-screen}
+\makelink{draw-gouraud}
+\makelink{draw-horizontal-flip-screen}
+\makelink{draw-horizontal-flip}
+\makelink{draw-lit}
+\makelink{draw-pivot-scaled-screen}
+\makelink{draw-pivot-scaled-vertical-flip-screen}
+\makelink{draw-pivot-scaled-vertical-flip}
+\makelink{draw-pivot-scaled}
+\makelink{draw-pivot-screen}
+\makelink{draw-pivot-vertical-flip-screen}
+\makelink{draw-pivot-vertical-flip}
+\makelink{draw-pivot}
+\makelink{draw-rotate-scaled-screen}
+\makelink{draw-rotate-scaled-vertical-flip-screen}
+\makelink{draw-rotate-scaled-vertical-flip}
+\makelink{draw-rotate-scaled}
+\makelink{draw-rotate-screen}
+\makelink{draw-rotate-vertical-flip-screen}
+\makelink{draw-rotate-vertical-flip}
+\makelink{draw-rotate}
+\makelink{draw-screen}
+\makelink{draw-stretched}
+\makelink{draw-translucent}
+\makelink{draw-vertical-flip-screen}
+\makelink{draw-vertical-flip}
+\makelink{draw-vertical-horizontal-flip-screen}
+\makelink{draw-vertical-horizontal-flip}
+\makelink{draw}
+\makelink{duplicate-screen}
+\makelink{duplicate}
+\makelink{ellipse-fill-screen/translucent}
+\makelink{ellipse-fill-screen}
+\makelink{ellipse-fill/translucent}
+\makelink{ellipse-fill}
+\makelink{ellipse-screen/translucent}
+\makelink{ellipse-screen}
+\makelink{ellipse/translucent}
+\makelink{ellipse}
+\makelink{fastline-screen/translucent}
+\makelink{fastline-screen}
+\makelink{fastline/translucent}
+\makelink{fastline}
+\makelink{floodfill-screen/translucent}
+\makelink{floodfill-screen}
+\makelink{floodfill/translucent}
+\makelink{floodfill}
+\makelink{get-rgb}
+\makelink{getpixel-screen}
+\makelink{getpixel}
+\makelink{height}
+\makelink{line-screen/translucent}
+\makelink{line-screen}
+\makelink{line/translucent}
+\makelink{line}
+\makelink{mask-color-screen}
+\makelink{mask-color}
+\makelink{polygon-screen/translucent}
+\makelink{polygon-screen}
+\makelink{polygon/translucent}
+\makelink{polygon3d-screen/translucent}
+\makelink{polygon3d-screen}
+\makelink{polygon3d/translucent}
+\makelink{polygon3d}
+\makelink{polygon}
+\makelink{print-center-screen}
+\makelink{print-center}
+\makelink{print-screen}
+\makelink{print-translucent}
+\makelink{print}
+\makelink{putpixel-screen/translucent}
+\makelink{putpixel-screen}
+\makelink{putpixel/translucent}
+\makelink{putpixel}
+\makelink{quad3d-screen/translucent}
+\makelink{quad3d-screen}
+\makelink{quad3d/translucent}
+\makelink{quad3d}
+\makelink{rectangle-fill-screen/translucent}
+\makelink{rectangle-fill-screen}
+\makelink{rectangle-fill/translucent}
+\makelink{rectangle-fill}
+\makelink{rectangle-screen/translucent}
+\makelink{rectangle-screen}
+\makelink{rectangle/translucent}
+\makelink{rectangle}
+\makelink{save-screen}
+\makelink{save}
+\makelink{screen}
+\makelink{spline-screen/translucent}
+\makelink{spline-screen}
+\makelink{spline/translucent}
+\makelink{spline}
+\makelink{triangle-screen/translucent}
+\makelink{triangle-screen}
+\makelink{triangle/translucent}
+\makelink{triangle3d-screen/translucent}
+\makelink{triangle3d-screen}
+\makelink{triangle3d/translucent}
+\makelink{triangle3d}
+\makelink{triangle}
+\makelink{width}
+
+Structure list
+
+\makelink{image}
+\makelink{v3d}
+
+\mark{image}
+
+\scheme{(define-struct image (bitmap width height))}
+
+Image is a collection of width, height, and an opaque bitmap type which represents a rectangular set of pixels.
+
+The normal struct accessors are not provided, however. Instead use the \link{width} and \link{height} functions provided by image.ss.
+
+\mark{v3d}
+\scheme{(define-struct v3d (x y z u v c))}
+
+\var{v3d} is a structure that represents a 3d coordinate( \var{x}, \var{y}, \var{z} ) with texture mapped coordinates( \var{u}, \var{v} ), and a color \var{c}.
+
+All the normal \scheme{define-struct} accessors are provided, \scheme{make-v3d}, \scheme{v3d-x}, \scheme{v3d-y}, \scheme{v3d-z}, \scheme{v3d-u}, \scheme{v3d-v}, \scheme{v3d-c}, but you cannot mutate a v3d.
+
+\mark{width}
+\function{(width image)}{num}
+
+Returns the width of an image.
+
+\mark{height}
+\function{(height image)}{num}
+
+Returns the height of an image.
+
+\scheme{(define-struct image (bitmap width height))}
+
+\mark{screen}
+\function{(screen)}{image}
+
+A special image that represents the current graphics context. This image can be used in every context any other image can be used, except for destroying it, but \var{screen} is physically different from images created by the user. \var{screen} is a video bitmap whereas other images are memory bitmaps. Memory bitmaps live entirely in RAM and can be accessed very quickly but video bitmaps live in the graphics card's memory and mutating that memory from software is quite slow. Therefore it is best to always draw on a memory bitmap and then copy the memory bitmap to the screen in one swoop with \link{copy}.
+
+\mark{create}
+\function{(create width height [depth])}{image}
+
+Create an image with the specified \var{width} and \var{height}. If \var{depth} is given the image will use that for the number of bits per pixel, otherwise it will default to what the current graphics context uses. If there is not enough memory to create the image #f will be returned. Unless you are creating exceptionally large images you should not normally run out of memory.
+
+\mark{color}
+\function{(color red green blue)}{num}
+
+Convert the three parts of a pixel, \var{red}, \var{green}, and \var{blue} into a single value that can be used wherever a color is required such as \link{putpixel}.
+\newline
+0 <= \var{red} <= 255\newline
+0 <= \var{green} <= 255\newline
+0 <= \var{blue} <= 255\newline
+
+\begin{schemedisplay}
+;; black
+(color 0 0 0)
+;; white
+(color 255 255 255)
+;; magic pink, the masking color
+(color 255 0 255)
+\end{schemedisplay}
+
+\mark{get-rgb}
+\function{(get-rgb color)}{(values red green blue)}
+
+Convert a color into the three color components, red, green, and blue.
+
+\mark{create-from-file}
+\function{(create-from-file filename)}{image}
+
+Load an image from disk and return it. This image is treated exactly the same as if it was created with \link{create} except the initial pixels are copied from the file. It is perfectly safe to mutate this image.
+
+\mark{create-sub}
+\function{(create-sub image x y width height)}{image}
+
+Create a new image which is a cut out of the parent image. \var{x},\var{y} is the upper left hand corner of the new image and \var{width}, \var{height} are the width and height respectively. 0,0 of the new image is the equivalent to \var{x},\var{y} of the parent image. Any changes made to the sub bitmap are reflected in the parent bitmap. This is useful for create a very large bitmap and sectioning parts off to give to various functions that want to deal with absolute coordinates.
+
+\begin{schemedisplay}
+(define m (create-sub (screen) 100 100 20 20))
+
+;; the next two lines do the same exact thing
+(rectangle m 2 2 12 12 (color 255 0 0))
+(rectangle (screen) 102 102 114 114 (color 255 0 0))
+\end{schemedisplay}
+
+\mark{create-sub-screen}
+\function{(create-sub-screen x y width height)}{image}
+
+\screen{create-sub}
+
+\mark{putpixel}
+\function{(putpixel image x y color)}{void}
+
+Set the pixel on \var{image} at \var{x}, \var{y} to \var{color}.
+
+\mark{putpixel-screen}
+\function{(putpixel-screen x y color)}{void}
+
+\screen{putpixel}
+
+\mark{putpixel/translucent}
+\function{(putpixel/translucent image red green blue alpha x y color)}{void}
+
+\translucent{putpixel}
+
+\mark{putpixel-screen/translucent}
+\function{(putpixel-screen/translucent red green blue alpha x y color)}{void}
+
+\screen{putpixel/translucent}
+
+\mark{getpixel}
+\function{(getpixel image x y)}{num}
+
+Get the value of the pixel on \var{image} at \var{x}, \var{y}
+
+\mark{getpixel-screen}
+\function{(getpixel-screen x y)}{num}
+
+\screen{getpixel}
+
+\mark{quad3d}
+\function{(quad3d image type texture v1 v2 v3 v4)}{void}
+
+Draw a 3d quad onto \var{image}. \var{texture} will be painted on the face of the quad. \var{type} should be one of
+
+\begin{schemedisplay}
+texture :: image
+v1 :: v3d
+v2 :: v3d
+v3 :: v3d
+v4 :: v3d
+\end{schemedisplay}
+
+\scheme{'POLYTYPE-FLAT} =  A simple flat shaded polygon, taking the color from the \var{c} value of the first vertex. This polygon type is affected by the drawing mode( \link{set-drawing-mode-solid!}, \link{set-drawing-mode-translucent!}, \link{set-drawing-mode-xor!} ), so it can be used to render XOR or translucent polygons.\newline
+\scheme{'POLYTYPE-GCOL} = A single-color gouraud shaded polygon. The colors for each vertex are taken from the \var{c} value, and interpolated across the polygon.\newline
+\scheme{'POLYTYPE-GRGB} = A gouraud shaded polygon which interpolates RGB triplets rather than a single color. The colors for each vertex are taken from the \var{c} value, which is interpreted as a 24-bit RGB triplet (0xFF0000 is red, 0x00FF00 is green, and 0x0000FF is blue).\newline
+\scheme{'POLYTYPE-ATEX} = An affine texture mapped polygon. This stretches the texture across the polygon with a simple 2d linear interpolation, which is fast but not mathematically correct. It can look ok if the polygon is fairly small or flat-on to the camera, but because it doesn't deal with perspective foreshortening, it can produce strange warping artifacts.\newline
+\scheme{'POLYTYPE-PTEX} = A perspective-correct texture mapped polygon. This uses the \var{z} value from the vertex structure as well as the \var{u}/\var{v} coordinates, so textures are displayed correctly regardless of the angle they are viewed from. Because it involves division calculations in the inner texture mapping loop, this mode is a lot slower than \scheme{'POLYTYPE-ATEX}.\newline
+\scheme{'POLYTYPE-ATEX-MASK} = Like \scheme{'POLYTYPE-ATEX} but pixels with a value of 0 are skipped.\newline
+\scheme{'POLYTYPE-PTEX-MASK} = Like \scheme{'POLYTYPE-PTEX} but pixels with a value of 0 are skipped.\newline
+\scheme{'POLYTYPE-ATEX-LIT} = Like \scheme{'POLYTYPE-ATEX} but blends the pixels using the light level taken from the \var{c} component of each vertex according to how \link{set-trans-blender!} was used.\newline
+\scheme{'POLYTYPE-PTEX-LIT} = Like \scheme{'POLYTYPE-PTEX} but blends the pixels using the light level taken from the \var{c} component of each vertex according to how \link{set-trans-blender!} was used.\newline
+\scheme{'POLYTYPE-ATEX-MASK-LIT} = A combination of \scheme{'POLYTYPE-ATEX-LIT} and \scheme{'POLYTYPE-ATEX-MASK}.\newline
+\scheme{'POLYTYPE-PTEX-MASK-LIT} = A combination of \scheme{'POLYTYPE-PTEX-LIT} and \scheme{'POLYTYPE-PTEX-MASK}.\newline
+\scheme{'POLYTYPE-ATEX-TRANS} = Like \scheme{'POLYTYPE-ATEX} but renders the texture translucently according to how \link{set-trans-blender!} was used.\newline
+\scheme{'POLYTYPE-PTEX-TRANS} = Like \scheme{'POLYTYPE-PTEX} but renders the texture translucently according to how \link{set-trans-blender!} was used.\newline
+\scheme{'POLYTYPE-ATEX-MASK-TRANS} = A combination of \scheme{'POLYTYPE-ATEX-MASK} and \scheme{'POLYTYPE-ATEX-TRANS}.\newline
+\scheme{'POLYTYPE-PTEX-MASK-TRANS} = A combination of \scheme{'POLYTYPE-PTEX-MASK} and \scheme{'POLYTYPE-PTEX-TRANS}.\newline
+
+All the rest act the same as their respective name minus the /ZBUF but these types account for z-buffering to cull quads that don't need to be drawn.
+\scheme{'POLYTYPE-FLAT/ZBUF}\newline
+\scheme{'POLYTYPE-GCOL/ZBUF}\newline
+\scheme{'POLYTYPE-GRGB/ZBUF}\newline
+\scheme{'POLYTYPE-ATEX/ZBUF}\newline
+\scheme{'POLYTYPE-PTEX/ZBUF}\newline
+\scheme{'POLYTYPE-ATEX-MASK/ZBUF}\newline
+\scheme{'POLYTYPE-PTEX-MASK/ZBUF}\newline
+\scheme{'POLYTYPE-ATEX-LIT/ZBUF}\newline
+\scheme{'POLYTYPE-PTEX-LIT/ZBUF}\newline
+\scheme{'POLYTYPE-ATEX-MASK-LIT/ZBUF}\newline
+\scheme{'POLYTYPE-PTEX-MASK-LIT/ZBUF}\newline
+\scheme{'POLYTYPE-ATEX-TRANS/ZBUF}\newline
+\scheme{'POLYTYPE-PTEX-TRANS/ZBUF}\newline
+\scheme{'POLYTYPE-ATEX-MASK-TRANS/ZBUF}\newline
+\scheme{'POLYTYPE-PTEX-MASK-TRANS/ZBUF}\newline
+
+\mark{quad3d-screen}
+\function{(quad3d-screen type texture v1 v2 v3 v4)}{void}
+
+\screen{quad3d}
+
+\mark{quad3d/translucent}
+\function{(quad3d/translucent image red green blue alpha type texture v1 v2 v3 v4)}{void}
+
+\translucent{quad3d}
+
+\mark{quad3d-screen/translucent}
+\function{(quad3d-screen/translucent red green blue alpha type texture v1 v2 v3 v4)}{void}
+
+\screen{quad3d/translucent}
+
+\mark{polygon3d}
+\function{(polgyon3d image type texture v3ds)}{void}
+
+Like \link{quad3d} except \var{v3ds} is a list of at least 3 \link{v3d}'s.
+
+\mark{polygon3d-screen}
+\function{(polygon3d-screen type texture v3ds)}{void}
+
+\screen{polygon3d}
+
+\mark{polygon3d/translucent}
+\function{(polygon3d/translucent image red green blue alpha type texture v3ds)}{void}
+
+\translucent{polygon3d}
+
+\mark{polygon3d-screen/translucent}
+\function{(polygon3d-screen/translucen red green blue alpha type texture v3ds)}{void}
+
+\screen{polygon3d/translucent}
+
+\mark{triangle3d}
+\function{(triangle3d image type texture v1 v2 v3)}{void}
+
+Like \link{quad3d} except there are only 3 vertexes, \var{v1}, \var{v2}, and \var{v3}.
+
+\mark{triangle3d-screen}
+\function{(triangle3d-screen type texture v1 v2 v3)}{void}
+
+\screen{triangle3d}
+
+\mark{triangle3d/translucent}
+\function{(triangle3d/translucent image red green blue alpha type texture v1 v2 v3)}{void}
+
+\translucent{triangle3d}
+
+\mark{triangle3d-screen/translucent}
+\function{(triangle3d-screen/translucent image red green blue alpha type texture v1 v2 v3)}{void}
+
+\screen{triangle3d/translucent}
+
+\mark{mask-color}
+\function{(mask-color image)}{num}
+
+Return the masking color of an image. This is always \scheme{(color 255 0 255)} but the function is provided for your convienence.
+
+\mark{mask-color-screen}
+\function{(mask-color-screen)}{num}
+
+Return the masking color of the screen.
+
+\mark{destroy}
+\function{(destroy image)}{void}
+
+Destroy an image that was created by the user( basically anything except \link{screen} ).
+
+\mark{duplicate}
+\function{(duplicate image)}{image}
+
+Create a new image and copy the contents from \var{image} onto it.
+
+\mark{duplicate-screen}
+\function{(duplicate-screen)}{image}
+
+\screen{duplicate}
+
+\mark{line}
+\function{(line image x1 y1 x2 y2 color)}{void}
+
+Draw a straight line from \var{x1},\var{y1} to \var{x2},\var{y2} using \var{color} for the pixel value. Clipping will be performed if the coordinates do not lie within \var{image}'s area.
+
+\mark{line-screen}
+\function{(line-screen x1 y1 x2 y2 color)}{void}
+
+\screen{line}
+
+\mark{line/translucent}
+\function{(line/translucent image red green blue alpha x1 y1 x2 y2 color)}{void}
+
+\translucent{line}
+
+\mark{line-screen/translucent}
+\function{(line-screen/translucent red green blue alpha x1 y1 x2 y2 color)}{void}
+
+\screen{line/translucent}
+
+\mark{fastline}
+\function{(fastline image x1 y1 x2 y2 color)}{void}
+
+Much like \link{line} except clipping is performed slightly differently in an optimized fashion. 
+
+\mark{fastline-screen}
+\function{(fastline-screen x1 y1 x2 y2 color)}{void}
+
+\screen{fastline}
+
+\mark{fastline/translucent}
+\function{(fastline/translucent image red green blue alpha x1 y1 x2 y2 color)}{void}
+
+\translucent{fastline}
+
+\mark{fastline-screen/translucent}
+\function{(fastline-screen/translucent red green blue alpha x1 y1 x2 y2 color)}{void}
+
+\screen{fastline/translucent}
+
+\mark{polygon}
+\function{(polygon image points color)}{void}
+
+Draws a polygon with an arbitrary list of coordinates onto \var{image} using \var{color} as the pixel values.\newline
+\var{points} should be a flat list of coordinates pairs. The length of \var{points} {\bf must} be even.
+\begin{schemedisplay}
+;; draw a red triangle with vertexes at (10,10), (20, 20), and (50,50)
+(polygon some-image '(10 10 20 20 50 50) (color 255 0 0))
+\end{schemedisplay}
+
+\mark{polygon-screen}
+\function{(polygon-screen points color)}{void}
+
+\screen{polygon}
+
+\mark{polygon/translucent}
+\function{(polygon/translucent image red green blue alpha points color)}{void}
+
+\translucent{polygon}
+
+\mark{polygon-screen/translucent}
+\function{(polygon-screen/translucent red green blue alpha points color)}{void}
+
+\screen{polygon/translucent}
+
+\mark{arc}
+\function{(arc image x y angle1 angle2 radius color)}{void}
+
+Draws a circular arc with center \var{x}, \var{y} in an anticlockwise direction starting from the angle \var{angle1} and ending when it reaches \var{angle2}. The angles range from 0 to 256, with 256 equal to a full circle, 64 a right angle, etc. Zero is to the right of the center point, and larger values rotate anticlockwise from there. Example: 
+
+\begin{schemedisplay}
+;; draw a white arc from 4 to 1 o'clock
+(arc (screen) 100 100 21 43 50 (color 255 255 255))
+\end{schemedisplay}
+
+\mark{arc-screen}
+\function{(arc-screen x y angle1 angle2 radius color)}{void}
+
+\screen{arc}
+
+\mark{arc/translucent}
+\function{(arc/translucent image red green blue alpha x y angle1 angle2 radius color)}{void}
+
+\translucent{arc}
+
+\mark{arc-screen/translucent}
+\function{(arc-screen/translucent red green blue alpha x y angle1 angle2 radius color)}{void}
+
+\screen{arc/translucent}
+
+\mark{calculate-spline}
+\function{(calculate-spline x1 y1 x2 y2 x3 y3 x4 y4 points)}{list-of x,y pairs}
+
+Calculates a series of npts values along a bezier spline, return them as a list of x,y pairs. The bezier curve is specified by the four x/y control points in the points array: \var{x1}, \var{y1} contain the coordinates of the first control point, \var{x2}, \var{y2} are the second point, etc. Control points 1 and 4 are the ends of the spline, and points 2 and 3 are guides. The curve probably won't pass through points 2 and 3, but they affect the shape of the curve between points 1 and 4 (the lines p1-p2 and p3-p4 are tangents to the spline). The easiest way to think of it is that the curve starts at p1, heading in the direction of p2, but curves round so that it arrives at p4 from the direction of p3.  In addition to their role as graphics primitives, spline curves can be useful for constructing smooth paths around a series of control points.
+
+\begin{schemedisplay}
+;; calculate 4 points
+(calculate-spline 1 1 10 10 5 9 20 3 4)
+-> ((1 . 1) (7 . 7) (10 . 7) (20 . 3))
+
+;; calculate 20 points
+(calculate-spline 1 1 10 10 5 9 20 3 20)
+-> ((1 . 1) (2 . 2) (3 . 4) (4 . 5) (5 . 5) (6 . 6) (6 . 7)
+(7 . 7) (7 . 7) (8 . 8) (9 . 8) (9 . 8) (10 . 7) (11 . 7)
+(12 . 7) (13 . 6) (14 . 5) (16 . 5) (18 . 4) (20 . 3))
+\end{schemedisplay}
+
+\mark{spline}
+\function{(spline image x1 y1 x2 y2 x3 y3 x4 y4 color)}{void}
+
+Draws a bezier spline using the four control points specified by \var{x1}, \var{y1}, \var{x2}, \var{y2}, \var{x3}, \var{y3}, \var{x4}, \var{y4}. Read the description of \link{calculate-spline} for information on how the spline is generated.
+
+\mark{spline-screen}
+\function{(spline-screen x1 y1 x2 y2 x3 y3 x4 y4 color)}{void}
+
+\screen{spline}
+
+\mark{spline/translucent}
+\function{(spline/translucent image red green blue alpha x1 y1 x2 y2 x3 y3 x4 y4 color)}{void}
+
+\translucent{spline}
+
+\mark{spline-screen/translucent}
+\function{(spline-screen/translucent red green blue alpha x1 y1 x2 y2 x3 y3 x4 y4 color)}{void}
+
+\screen{spline/translucent}
+
+\mark{floodfill}
+\function{(floodfill image x y color)}{void}
+
+Fill \var{image} with the specified \var{color} starting at \var{x}, \var{y}. All pixels with the same value at \var{x}, \var{y} that can be traced back to \var{x}, \var{y} without going over a gap will be overwritten with \var{color}.
+
+\mark{floodfill-screen}
+\function{(floodfill-screen x y color)}{void}
+
+\screen{floodfill}
+
+\mark{floodfill/translucent}
+\function{(floodfill/translucent image red green blue alpha x y color)}{void}
+
+\translucent{floodfill}
+
+\mark{floodfill-screen/translucent}
+\function{(floodfill-screen/translucent red green blue alpha x y color)}{void}
+
+\screen{floodfill/translucent}
+
+\mark{triangle}
+\function{(triangle image x1 y1 x2 y2 x3 y3 color)}{void}
+
+Draw a filled triangle on \var{image} using \var{x1}, \var{y1}, \var{x2}, \var{y2}, \var{x3}, \var{y3} as the vertexes with a pixel value of \var{color}.
+
+\mark{triangle-screen}
+\function{(triangle-screen x1 y1 x2 y2 x3 y3 color)}{void}
+
+\screen{triangle}
+
+\mark{triangle/translucent}
+\function{(triangle/translucent image x1 y1 x2 y2 x3 y3 color)}{void}
+
+\translucent{triangle}
+
+\mark{triangle-screen/translucent}
+\function{(triangle-screen/translucent x1 y1 x2 y2 x3 y3 color)}{void}
+
+\screen{triangle/translucent}
+
+\mark{circle}
+\function{(circle image x y radius color)}{void}
+
+Draw a circle on \var{image} at \var{x}, \var{y} with \var{radius} and a pixel value of \var{color}.
+
+\mark{circle-screen}
+\function{(circle-screen x y radius color)}{void}
+
+\screen{circle}
+
+\mark{circle/translucent}
+\function{(circle/translucent image red green blue alpha x y radius color)}{void}
+
+\translucent{circle}
+
+\mark{circle-screen/translucent}
+\function{(circle-screen/translucent red green blue alpha x y radius color)}{void}
+
+\screen{circle/translucent}
+
+\mark{circle-fill}
+\function{(circle-fill image x y radius color)}{void}
+
+Draws a filled circle on \var{image} at \var{x}, \var{y} with \var{radius} and a pixel value of \var{color}.
+
+\mark{circle-fill-screen}
+\function{(circle-fill-screen x y radius color)}{void}
+
+\screen{circle-fill}
+
+\mark{circle-fill/translucent}
+\function{(circle-fill/translucent image red green blue alpha x y radius color)}{void}
+
+\translucent{circle-fill}
+
+\mark{circle-fill-screen/translucent}
+\function{(circle-fill-screen/translucent red green blue alpha x y radius color)}{void}
+
+\screen{circle-fill/translucent}
+
+\mark{ellipse}
+\function{(ellipse image x y rx ry color)}{void}
+
+Draw an ellipse on \var{image} at \var{x}, \var{y} with an x radius of \var{rx} and a y radius of \var{ry} using a pixel value of \var{color}.
+
+\mark{ellipse-screen}
+\function{(ellipse-screen x y rx ry color)}{void}
+
+\screen{ellipse}
+
+\mark{ellipse/translucent}
+\function{(ellipse/translucent image red green blue alpha x y rx ry color)}{void}
+
+\translucent{ellipse}
+
+\mark{ellipse-screen/translucent}
+\function{(ellipse-screen/translucent red green blue alpha x y rx ry color)}{void}
+
+\screen{ellipse/translucent}
+
+\mark{ellipse-fill}
+\function{(ellipse-fill image x y rx ry color)}{void}
+
+Draw a filled ellipse on \var{image} at \var{x}, \var{y} with an x radius of \var{rx} and a y radius of \var{ry} using a pixel value of \var{color}.
+
+\mark{ellipse-fill-screen}
+\function{(ellipse-fill-screen x y rx ry color)}{void}
+
+\screen{ellipse-fill}
+
+\mark{ellipse-fill/translucent}
+\function{(ellipse-fill/translucent image red green blue alpha x y rx ry color)}{void}
+
+\translucent{ellipse-fill}
+
+\mark{ellipse-fill-screen/translucent}
+\function{(ellipse-fill-screen/translucent red green blue alpha x y rx ry color)}{void}
+
+\screen{ellipse-fill/translucent}
+
+\mark{rectangle}
+\function{(rectangle image x1 y1 x2 y2 color)}{void}
+
+Draw a rectangle on \var{image} from \var{x1},\var{y1} to \var{x2},\var{y2} with a pixel value of \var{color}.
+
+\mark{rectangle-screen}
+\function{(rectangle-screen x1 y1 x2 y2 color)}{void}
+
+\screen{rectangle}
+
+\mark{rectangle/translucent}
+\function{(rectangle/translucent image red green blue alpha x1 y1 x2 y2 color)}{void}
+
+\translucent{rectangle}
+
+\mark{rectangle-screen/translucent}
+\function{(rectangle-screen/translucent red green blue alpha x1 y1 x2 y2 color)}{void}
+
+\screen{rectangle/translucent}
+
+\mark{rectangle-fill}
+\function{(rectangle-fill image x1 y1 x2 y2 color)}{void}
+
+Draw a filled rectangle on \var{image} from \var{x1},\var{y1} to \var{x2},\var{y2} with a pixel value of \var{color}.
+
+\mark{rectangle-fill-screen}
+\function{(rectangle-fill-screen x1 y1 x2 y2 color)}{void}
+
+\screen{rectangle-fill}
+
+\mark{rectangle-fill/translucent}
+\function{(rectangle-fill/translucent image red green blue alpha x1 y1 x2 y2 color)}{void}
+
+\translucent{rectangle-fill}
+
+\mark{rectangle-fill-screen/translucent}
+\function{(rectangle-fill-screen/translucent red green blue alpha x1 y1 x2 y2 color)}{void}
+
+\screen{rectangle-fill/translucent}
+
+\mark{print}
+\function{(print image x y color background-color message)}{void}
+
+Print \var{message} on \var{image} starting at \var{x},\var{y}. The foreground color will be \var{color} and the backgrond color will be \var{background-color}. If you pass -1 for the \var{background-color} then the background will be left alone.
+
+\begin{schemedisplay}
+;; print hello world in red text
+(print some-image 20 30 (color 255 0 0) -1 "Hello World!")
+\end{schemedisplay}
+
+\mark{print-screen}
+\function{(print-screen x y color background-color message)}{void}
+
+\screen{print-screen}
+
+\mark{print-translucent}
+\function{(print-translucent image x y color alpha message)}{void}
+
+Print \var{message} onto \var{image} starting at \var{x}, \var{y} with an transparency level of \var{alpha}.\newline
+0 <= \var{alpha} <= 255
+
+Where 0 = translucent and 255 = opaque.
+
+\mark{print-center}
+\function{(print-center image x y color background-color message)}{void}
+
+Like \link{print} except \var{x}, \var{y} will be the middle of the string instead of the left hand side.
+
+\mark{print-center-screen}
+\function{(print-center-screen x y color background-color message)}{void}
+
+\screen{print-center}
+
+\mark{clear}
+\function{(clear image [color])}{void}
+
+Set all pixels on \var{image} to \var{color}. If \var{color} is not specified it defaults to \scheme{(color 0 0 0)}, black.
+
+\mark{clear-screen}
+\function{(clear-screen)}
+
+\screen{clear}
+
+\mark{draw}
+\function{(draw image sprite x y)}{void}
+
+\scheme{sprite :: image}
+
+Copy \var{sprite} onto \var{image} starting at \var{x}, \var{y} but not overwriting pixels in \var{image} when the pixel value in \var{sprite} is (color 255 0 255), the masking color.
+
+\mark{draw-screen}
+\function{(draw-screen sprite x y)}{void}
+
+\screen{draw}
+
+\mark{draw-translucent}
+\function{(draw-translucent image sprite [x] [y])}{void}
+
+Like \link{draw} except \var{sprite} is drawn translucently. Call \link{set-trans-blender!} at some point before using this function. If \var{x} and \var{y} are not given they default to 0, 0.
+
+\mark{draw-lit}
+\function{(draw-lit image sprite [x] [y] [alpha])}{void}
+
+Like \link{draw} except \var{sprite} is drawn with a lightning level of \var{alpha}. Call \link{set-trans-blender!} at some point before using this function. If \var{x}, \var{y}, and \var{alpha} are not given they default to 0, 0, 0.
+
+\mark{draw-vertical-flip}
+\function{(draw-vertical-flip image sprite x y)}{void}
+
+Like \link{draw} but flip \var{sprite} over the x-axis in the middle of the sprite.
+
+\mark{draw-vertical-flip-screen}
+\function{(draw-vertical-flip-screen sprite x y)}{void}
+
+\screen{draw-vertical-flip}
+
+\mark{draw-horizontal-flip}
+\function{(draw-horizontal-flip image sprite x y)}{void}
+
+Like \link{draw} but \var{sprite} is flipped over the y-axis in the middle of the sprite.
+
+\mark{draw-horizontal-flip-screen}
+\function{(draw-horizontal-flip-screen sprite x y)}{void}
+
+\screen{draw-horizontal-flip-screen}
+
+\mark{draw-vertical-horizontal-flip}
+\function{(draw-vertical-horizontal-flip image sprite x y)}{void}
+
+A combination of \link{draw-vertical-flip} and \link{draw-horizontal-flip}.
+
+\mark{draw-vertical-horizontal-flip-screen}
+\function{(draw-vertical-horizontal-flip-screen sprite x y)}{void}
+
+\screen{draw-vertical-horizontal-flip}
+
+\mark{draw-gouraud}
+\function{(draw-gouraud image sprite x y upper-left upper-right lower-left lower-right)}{void}
+
+0 <= \var{upper-left} <= 255\newline
+0 <= \var{upper-right} <= 255\newline
+0 <= \var{lower-left} <= 255\newline
+0 <= \var{lower-right} <= 255\newline
+
+Like \link{draw-lit} but the lighting is interpolated across the 4 corners.
+
+\mark{draw-gouraud-screen}
+\function{(draw-gouraud-screen sprite x y upper-left upper-right lower-left lower-right)}{void}
+
+\screen{draw-gouraud}
+
+\mark{draw-character}
+\function{(draw-character image sprite x y color background)}{void}
+
+Draws \var{sprite} onto \var{image} starting at \var{x}, \var{y} but only using \var{color} for the foreground pixels and transparent pixels in the \var{background} color, or skipping them completely if \var{backgrond} is -1.
+
+\begin{schemedisplay}
+;; draw logo silhouette in red
+(draw-character some-image logo 200 200 (color 255 0 0) -1)
+\end{schemedisplay}
+
+\mark{draw-character-screen}
+\function{(draw-character-screen sprite x y color background)}{void}
+
+\screen{draw-character}
+
+\mark{draw-rotate}
+\function{(draw-rotate image sprite x y angle)}{void}
+
+Like \link{draw} but rotate the sprite around its center using \var{angle}.
+
+0 <= \var{angle} <= 255\newline
+0 lies on the positive x-axis, 64 on the positive y-axis, 128 on the negative x-axis, and 192 on the negative y-axis.
+
+\mark{draw-rotate-screen}
+\function{(draw-rotate-screen sprite x y angle)}{void}
+
+\screen{draw-rotate}
+
+\mark{draw-rotate-vertical-flip}
+\function{(draw-rotate-vertical-flip image sprite x y angle)}{void}
+
+Like \link{draw-rotate} but \var{sprite} is flipped over the x-axis.
+
+\mark{draw-rotate-vertical-flip-screen}
+\function{(draw-rotate-vertical-flip-screen sprite x y angle)}{void}
+
+\screen{draw-rotate-vertical-flip}
+
+\mark{draw-rotate-scaled}
+\function{(draw-rotate-scaled image sprite x y angle scale)}{void}
+
+Like \link{draw-rotate} but \var{sprite} is scaled as well according to \var{scale}.
+
+0 <= \var{angle} <= 255\newline
+0 <= \var{scale} <= +infinity\newline
+
+\mark{draw-rotate-scaled-screen}
+\function{(draw-rotate-scaled-screen sprite x y angle scale)}{void}
+
+\screen{draw-rotate-scaled-screen}
+
+\mark{draw-rotate-scaled-vertical-flip}
+\function{(draw-rotate-scaled-vertical-flip image sprite x y angle scale)}{void}
+
+Like \link{draw-rotate-scaled} but flipped over the x-axis.
+
+\mark{draw-rotate-scaled-vertical-flip-screen}
+\function{(draw-rotate-scaled-vertical-flip-screen sprite x y angle scale)}{void}
+
+\screen{draw-rotate-scaled-vertical-flip}
+
+\mark{draw-pivot}
+\function{(draw-pivot image sprite x y center-x center-y angle)}{void}
+
+Draw \var{sprite} onto \var{image} at \var{x}, \var{y} rotating the sprite around \var{center-x}, \var{center-y} by \var{angle}.
+
+\begin{schemedisplay}
+;; draw my-sprite onto some-image at 50,100 anchoring my-sprite at 5,5
+;; and rotating it 64 units( 90 degrees )
+(draw-pivot some-image my-sprite 50 100 5 5 64)
+\end{schemedisplay}
+
+\mark{draw-pivot-screen}
+\function{(draw-pivot-screen image sprite x y center-x center-y angle)}{void}
+
+\screen{draw-pivot}
+
+\mark{draw-pivot-vertical-flip}
+\function{(draw-pivot-vertical-flip image sprite x y center-x center-y angle)}{void}
+
+Like \link{draw-pivot} but flip \var{sprite} over the x-axis.
+
+\mark{draw-pivot-vertical-flip-screen}
+\function{(draw-pivot-vertical-flip-screen sprite x y center-x center-y angle)}{void}
+
+\screen{draw-pivot-vertical-flip}
+
+\mark{draw-pivot-scaled}
+\function{(draw-pivot-scaled image sprite x y center-x center-y angle scale)}{void}
+
+Like \link{draw-pivot} but scale \var{sprite} as well.
+
+\mark{draw-pivot-scaled-screen}
+\function{(draw-pivot-scaled-screen sprite x y center-x center-y angle scale)}{void}
+
+\screen{draw-pivot-scaled}
+
+\mark{draw-pivot-scaled-vertical-flip}
+\function{(draw-pivot-scaled-vertical-flip image sprite x y center-x center-y angle scale)}{void}
+
+A combination of \link{draw-pivot-scaled} and \link{draw-pivot-vertical-flip}.
+
+\mark{draw-pivot-scaled-vertical-flip-screen}
+\function{(draw-pivot-scaled-vertical-flip-screen sprite x y center-x center-y angle scale)}{void}
+
+\screen{draw-pivot-scaled-vertical-flip}
+
+\mark{copy}
+\function{(copy image-dest image-src [x y] [width height] [dest-x dest-y])}{void}
+
+Copy each pixel from \var{image-src} to \var{image-dest}. \var{x}, \var{y}, \var{dest-x}, and \var{dest-y} default to 0 if not given. \var{width} and \var{height} default to the dimensions of \var{image-src} if not given.
+
+\var{x}, \var{y} specify the upper left corner within \var{image-src} to start copying pixels from.\newline
+\var{width}, \var{height} specify the width and height respectively from \var{x}, \var{y} to copy from.\newline
+\var{dest-x}, \var{dest-y} spcify the upper left corner within \var{image-dest} to copy pixels to.
+
+\mark{copy-screen}
+\function{(copy image-src [x y] [width height] [dest-x dest-y])}{void}
+
+\screen{copy}
+
+\mark{copy-masked}
+\function{(copy-masked image-dest image-src [x y] [width height] [dest-x dest-y])}{void}
+
+Like \link{copy} except masking pixels( \scheme{(color 255 0 255)} ) in \var{image-src} are not copied to \var{image-dest}.
+
+\mark{copy-masked-screen}
+\function{(copy-masked-screen image-src [x y] [width height] [dest-x dest-y])}{void}
+
+\screen{copy-masked}
+
+\mark{copy-stretch}
+\function{(copy-stretch image-dest image-src source-x source-y source-width source-height dest-x dest-y dest-width dest-height)}{void}
+
+Like \link{copy} except the area specified by \var{source-x}, \var{source-y}, \var{source-width}, \var{source-height} is copied in such a way to take up the area specified by \var{dest-x}, \var{dest-y}, \var{dest-width}, \var{dest-height}.
+
+\mark{copy-stretch-screen}
+\function{(copy-stretch-screen image-src source-x source-y source-width source-height dest-x dest-y dest-width dest-height)}{void}
+
+\screen{copy-stretch}
+
+\mark{copy-masked-stretch}
+\function{(copy-masked-stretch image-dest image-src source-x source-y source-width source-height dest-x dest-y dest-width dest-height)}{void}
+
+Like \link{copy-stretch} but skip masking pixels like \link{copy-masked}.
+
+\mark{copy-masked-stretch-screen}
+\function{(copy-masked-stretch-screen image-src source-x source-y source-width source-height dest-x dest-y dest-width dest-height)}{void}
+
+\screen{copy-masked-stretch}
+
+\mark{draw-stretched}
+\function{(draw-stretched image sprite x y width height)}{void}
+
+Draw \var{sprite} onto \var{image} like in \link{draw} but stretch the sprite so its width and height match that of \var{width} and \var{height}.
+
+\mark{save}
+\function{(save image filename)}{void}
+
+Save \var{image} to a file named by \var{filename}.
+
+\mark{save-screen}
+\function{(save-screen filename)}{void}
+
+\screen{save} Useful for screenshots.
+
+

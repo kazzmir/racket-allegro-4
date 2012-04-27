@@ -1,0 +1,97 @@
+\documentclass{book} 
+\usepackage{slatex} 
+\usepackage{makeidx}
+
+\author{Jon Rafkind}
+\title{Allegro: Multimedia library and game utilities}
+\date{\today}
+
+\makeindex
+\begin{document} 
+\maketitle
+\newcommand{\var}[1]{\scheme|#1|}
+\newcommand{\num}[1]{\scheme|#1|}
+\newcommand{\link}[1]{\hyperlink{#1}{#1}}
+\newcommand{\makelink}[1]{\hypertarget{s_#1}{}\link{#1}\newline}
+\newcommand{\mark}[1]{\index{#1}\hrule\hyperlink{s_#1}{top}\hypertarget{#1}{}\newline\newline}
+\newcommand{\function}[2]{procedure: \scheme{#1 :: #2}}
+\newcommand{\qfunction}[2]{\scheme{#1 :: #2}}
+
+\begin{schemeregion}
+
+Allegro offers a wide range of multimedia use such as graphics, sound, keyboard, and mouse handling. It also provides a set of game utilities for some of the mechanics real-time games need. The Allegro package is based on a C library, also named Allegro, by Shawn Hargreaves.
+
+The goal of the C library and consequently the scheme package is to make multimedia, especially games, very easy and straight-forward to program. 
+
+More information about the C library can be found here:
+
+{\tt http://alleg.sf.net}
+
+{\bf Where to start?}\newline
+If you are just looking to write a game look at the \link{game-chapter} and \link{graphics-chapter} chapter. The allegro.plt package contains high-level and low-level mechanisms, but you don't need to be familiar with all of them to use it.
+
+The Allegro package is quite large and I apologize in advance for any inconsistencies in this documentation. Please send any typos or other bugs in this documentation to jon@rafkind.com.
+
+\subsection*{Installation}
+
+Allegro can be installed via planet. Either require a file from the distribution in mzscheme/drscheme
+\begin{schemedisplay}
+(require (planet "util.ss" ("kazzmir" "allegro.plt")))
+\end{schemedisplay}
+
+Or download the allegro.plt file from the planet site and install it by hand
+
+\begin{verbatim}
+$ planet -f allegro.plt kazzmir X Y
+\end{verbatim}
+
+Where X and Y is the version of the package such as 1 1 or 1 6.
+
+The planet package comes with the underlying C library. On Windows and OSX this library is a prebuilt shared library( dll or dylib ). On UNIX/Linux the C library is built from source which could potentially take a few minutes to complete. During this time you will not see any indication of what planet is doing, but it should complete and be useable in the time it takes to get a cup of coffee.
+
+\tableofcontents
+
+\chapter{Utilities}
+
+\input{utils}
+
+\chapter{Graphics}
+\hypertarget{graphics-chapter}{}
+
+\input{graphics}
+
+\chapter{Sound}
+
+\input{sound}
+
+\chapter{Keyboard}
+
+\input{keyboard}
+
+\chapter{Mouse}
+
+\input{mouse}
+
+\chapter{Game Utilities}
+\hypertarget{game-chapter}{}
+
+\input{game}
+
+\chapter{Examples}
+
+\hypertarget{examples}{}
+
+\input{examples}
+
+\chapter{FAQ}
+
+\input{faq}
+
+\chapter{ChangeLog}
+
+\input{changelog}
+
+\end{schemeregion}
+
+\printindex
+\end{document}

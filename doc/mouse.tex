@@ -1,0 +1,39 @@
+\scheme{(require (planet "mouse.ss" ("kazzmir" "allegro.plt")))}
+
+Note that it is usually best to prefix the mouse import because it exposes common names. I usually use this:\newline
+\scheme{(require (prefix mouse- (planet "mouse.ss" ("kazzmir" "allegro.plt"))))}
+
+Function list
+
+\makelink{left-click?}
+\makelink{right-click?}
+\makelink{x}
+\makelink{y}
+\makelink{get-mickeys}
+
+\mark{left-click?}
+\function{(left-click?)}{boolean}
+
+Returns #t if the left mouse button is being clicked, otherwise #f.
+
+\mark{right-click?}
+\function{(right-click?)}{boolean}
+
+Returns #t if the right mouse button is being clicked, otherwise #f.
+
+\mark{x}
+\function{(x)}{num}
+
+Returns the current x coordinate of the mouse on the graphics context.
+
+\mark{y}
+\function{(y)}{num}
+
+Returns the current y coordinate of the mouse on the graphics context.
+
+\mark{get-mickeys}
+\function{(get-mickeys)}{(values dx dy)}
+
+Returns two integers representing how far the mouse has just moved.
+
+

@@ -1,0 +1,91 @@
+There are a few example programs that come with the allegro.plt package. Type any of the following require lines into drscheme/mzscheme and call the (run) method to run them.
+
+\begin{schemedisplay}
+;; Demo of sound and using the mouse
+(require (planet "piano.ss" ("kazzmir" "allegro.plt") "examples"))
+
+;; Show Allegros ability to blend images together
+(require (planet "exblend.ss" ("kazzmir" "allegro.plt") "examples"))
+
+;; Hello world
+(require (planet "exhello.ss" ("kazzmir" "allegro.plt") "examples"))
+
+;; 3d bouncing boxes in various rendering modes
+(require (planet "ex3d.ss" ("kazzmir" "allegro.plt") "examples"))
+
+;; 3d simulation of flying through a wormhole, non-interactive 
+(require (planet "wormhole.ss" ("kazzmir" "allegro.plt") "examples"))
+
+;; A game wherein you must collect the white diamonds and escape through the
+;; red portal. Left click to shoot
+(require (planet "xquest.ss" ("kazzmir" "allegro.plt") "examples/xquest"))
+
+;; A slightly different remake of xquest.ss using the game framework
+(require (planet "simple.ss" ("kazzmir" "allegro.plt") "examples"))
+\end{schemedisplay}
+
+The following is a short tutorial on using Allegro. At each step I will add
+some code and explain what it does.
+
+1. Set up Allegro and quit. Pretty self explanatory.
+
+\begin{schemedisplay}
+;; this require will be used throughout
+(require (planet "util.ss" ("kazzmir" "allegro.plt" 1 1)))
+(require (planet "keyboard.ss" ("kazzmir" "allegro.plt" 1 1)))
+(require (prefix image- (planet "image.ss" ("kazzmir" "allegro.plt" 1 1))))
+(require (prefix mouse- (planet "mouse.ss" ("kazzmir" "allegro.plt" 1 1))))
+
+(define (run)
+  (easy-init 640 480 16) ;; set up Allegro. Use 640x480 for window demensions and 16 bits per pixel
+  (easy-exit)) ;; Just quit Allegro
+\end{schemedisplay}
+
+2. Print hello world to the screen and quit when ESC is pressed.
+
+\begin{schemedisplay}
+(define (run)
+  (easy-init 640 480 16)
+  (game-loop
+     (lambda ()
+        (keypressed? 'ESC))
+     (lambda (buffer)
+        (image-print buffer 50 50 (image-color 255 255 255) -1 "Hello world"))
+     (frames-per-second 30))
+  (easy-exit))
+\end{schemedisplay}
+
+3. Print hello world wherever the mouse is.
+
+\begin{schemedisplay}
+(define (run)
+  (easy-init 640 480 16)
+  (game-loop
+     (lambda ()
+        (keypressed? 'ESC))
+     (lambda (buffer)
+        (let ((x (mouse-x))
+	      (y (mouse-y)))
+	 (image-print buffer x y (image-color 255 255 255) -1 "Hello world")))
+     (frames-per-second 30))
+  (easy-exit))
+\end{schemedisplay}
+
+4. Load a bitmap and show it where the mouse is.
+
+\begin{schemedisplay}
+(define (run)
+  (easy-init 640 480 16)
+  (let ((my-image (image-create-from-file "myimage.bmp")))
+    (game-loop
+      (lambda ()
+        (keypressed? 'ESC))
+      (lambda (buffer)
+        (let ((x (mouse-x))
+	      (y (mouse-y)))
+	 (image-copy buffer my-image x y)))
+     (frames-per-second 30))
+  (easy-exit)))
+\end{schemedisplay}
+
+

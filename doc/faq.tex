@@ -1,0 +1,53 @@
+Q. Where and how do I get the Allegro library itself to install?\newline
+A. You dont need to install Allegro, it comes with the planet package.
+
+Q. I get errors about the planet download not completing.\newline
+A. Planet sometimes has problems with very large packages, like this one.
+You can always download the latest package from my home page and install it
+on the command line.
+
+http://www.rafkind.com/jon/showproject.php?id=27
+
+To install on the command line type the following\newline
+{\tt \$ planet -f allegro.plt kazzmir 1 4}
+
+Those last two parameters can really be whatever you want, they are just
+version numbers, but they should probably match the version that you
+downloaded.
+
+Q. The planet package wont install. I am on Ubuntu.\newline
+A. Ubuntu is a binary distribution which doesnt come with the tools necessary
+to build Allegro from source. To get these tools goto the ubuntu package
+manager and install the following packages:
+
+  {\tt make}\newline
+  {\tt libx11-dev}
+
+Planet wont know if Allegro doesn't build correctly so you will need to
+uninstall the package before trying to install it again. This can be
+accomplished like so:\newline
+{\tt \$ planet -r kazzmir allegro.plt 1 4}
+
+Replace the last two parameters with the version of Allegro you are trying to
+use.
+
+Q. I get an error like "Scheme->C: expects argument of type <int32>; given 50.3".\newline
+A. This means you passed in a floating point number to an allegro function that requires an integer. You can use the \link{round*} method to convert a float to an integer or use the following code:
+
+\begin{schemedisplay}
+(define (my-round i)
+  (inexact->exact (round i)))
+\end{schemedisplay}
+
+Q. How do I build stand-alone executable that use Allegro?\newline
+A. The easiest way is to use 'create executable' from DrScheme\newline
+
+Use the 'module' language from within DrScheme. Make sure your program is wrapped with a (module ...) s-expr.
+
+\begin{schemedisplay}
+(module mygame mzscheme
+ ...
+)
+\end{schemedisplay}
+
+Then click scheme->create executable and follow the options from there.

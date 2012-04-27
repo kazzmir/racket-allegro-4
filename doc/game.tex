@@ -1,0 +1,427 @@
+\newcommand{\syntax}[1]{syntax: \scheme{#1}}
+
+\scheme{(require (planet "game.ss" ("kazzmir" "allegro.plt")))}
+
+\scheme{game.ss} provides some useful types and functions that remove much of the design work needed to create real-time games. Normally these games follow the same basic structure: execute a function to update the universe, draw the universe. The mechanism to do this is what \link{game-loop} gives you, but game.ss takes this a step further by providing the universe as well. All you must do is populate the universe with objects and you will have an instant game.
+
+Of course with any framework game.ss forces you to follow one design. If you feel that this design is not what you need then roll your own. Once you understand how game.ss works its not terribly difficult to write a different version.
+
+Look at "examples/simple.ss" in allegro.plt for a concrete example of how to use the game framework.
+
+Function List
+
+\makelink{add-object}
+\makelink{constant}
+\makelink{define-generator}
+\makelink{define-object}
+\makelink{get-mouse-movement}
+\makelink{get-mouse-x}
+\makelink{get-mouse-y}
+\makelink{is-a?}
+\makelink{left-clicking?}
+\makelink{make-animation-from-files}
+\makelink{make-world}
+\makelink{make}
+\makelink{me}
+\makelink{right-clicking?}
+\makelink{round*}
+\makelink{say}
+\makelink{start}
+
+Structure List
+
+\makelink{Animation}
+\makelink{Basic}
+\makelink{shape^}
+\makelink{Shape}
+\makelink{Point}
+\makelink{Circle}
+\makelink{Rectangle}
+\makelink{World}
+
+\mark{Basic}
+\scheme{Basic :: class}
+
+Basic is the root object of all objects in the game universe. Technically it is a class as defined by \scheme{class*} in \scheme{class.ss} but for the most part you can ignore this if you are just using whats in game.ss. Basic has the following methods
+
+{\bf Fields}\newline
+\scheme{phase} - Affects the order of drawing. Lower numbers are drawn first and higher numbers are drawn later. This defaults to 0.\newline
+\scheme{x} - The x coordinate of this object. This is used for collision detection so do not provide your own x coordinate in your own objects.\newline
+\scheme{y} - The y coordinate, with the same restrictions as x.\newline
+
+{\bf Functions}
+
+\function{(can-collide obj)}{boolean}
+
+Returns #t if this object can collide with \var{obj}.
+
+\function{(shapes)}{list-of shape}
+
+Returns a list of shapes used for collision detection. An empty list means this object can't collide with anything and its \scheme{can-collide} method should probably return #f for all objects.
+
+\function{(key world keys)}{void}
+
+This procedure is run when the user presses a key. \var{keys} is a list of currently pressed keys and \var{world} is the current universe.
+
+\function{(touch world obj)}{void}
+
+This object collided with obj and can now perform any side-affects.
+
+\function{(tick world)}{void}
+
+The main update procedure. This procedure is run by the universe when a logic cycle is occuring. Moving around the universe should be done here.
+
+\function{(draw world buffer)}{void}
+
+This procedure is run when the object is allowed to draw itself. \var{buffer} is a  a plain \link{image}( not the screen ).
+
+\function{(get-x)}{int}
+
+Returns the x coordinate of this object
+
+\function{(get-y)}{int}
+
+Returns the y coordinate of this object
+
+\mark{World}
+\scheme{World :: class}
+
+World is a special class that represents the universe. It derives from Basic. Normally you don't need to know about much of the internals of World but you would if you aren't using the predefined game-loop that is part of game.ss.
+
+Functions
+
+\function{(get-width)}{number}
+
+Returns the current viewable width of the world.
+
+\function{(get-height)}{number}
+
+Returns the current viewable height of the world.
+
+\function{(get-depth)}{number}
+
+Returns the current bits per pixel used to display the world.
+
+\function{(get-mode)}{symbol}
+
+Returns either \scheme{'WINDOWED} or \scheme{'FULLSCREEN} representing what sort of graphics mode the world is using to be displayed.
+
+\function{(key keys)}{void}
+
+Let all the objects know about \var{keys} through the \var{key} method.
+
+\function{(add obj)}{void}
+
+Add an object to the internal list of objects.
+
+\function{(tick)}{void}
+
+Call \var{tick} on all the objects.
+
+\function{(draw buffer)}{void}
+
+Call \var{draw} on all the objects.
+
+\function{(remove obj)}{void}
+
+Remove \var{obj} from the internal list of objects. All other objects in the list will receive the \scheme{death} message if they have it defined.
+
+\function{(remove-all)}{void}
+
+Clear the list of internal objects.
+
+\function{(get-objects)}{list-of Basic}
+
+Returns the internal list of objects.
+
+\function{(get-object pred)}{Basic or #f}
+
+\scheme{pred :: (lambda (obj) ..)}\newline
+Return the first object that statisfies \var{pred}.
+
+\function{(reset-collision)}{void}
+
+Reset the collision detection objects.
+
+\function{(collide)}{void}
+
+Tests all objects for collisions using a binary space partition. Only objects that live in the same binary space partition {\bf and} both return #t from \scheme{can-collide} will be tested for collisions.
+
+\mark{Animation}
+\scheme{Animation :: class}
+
+Animation encapsulates a set of images to be displayed.
+
+Fields
+
+\scheme{speed :: int} - The speed at which the animations change.
+
+Functions
+
+\function{(add-animation image)}{void}
+
+Add an image to the list of images.
+
+\function{(draw buffer x y)}{void}
+
+Draw the current image onto \var{buffer}. \var{x}, \var{y} specify the {\bf middle} of the image, not the upper left hand corner.
+
+\function{(next-animation)}{void}
+
+Move the image to the next animation. This function should be called every logic cycle, not during the draw phase.
+
+\mark{shape^}
+\scheme{shape^ :: interface}
+
+\scheme{shape^} is an interface that all shapes should implement. It has the following functions
+
+\function{(min-x)}{int} - The left most x coordinate of this shape.\newline
+\function{(max-x)}{int} - The right most x coordinate of this shape.\newline
+\function{(min-y)}{int} - The top most y coordinate of this shape.\newline
+\function{(max-y)}{int} - The bottom most y coordinate of this shape.\newline
+\function{(collide x y shape sx sy)}{boolean} - Returns #t if this shape collides with \var{shape}. The middle coordinates of this shape are \var{x} and \var{y}. The middle coordinates of \var{shape} are \var{sx} and \var{sy}.\newline
+\function{(inside x y sx sy)}{boolean} - Returns #t if the coordinates \var{sx}, \var{sy} lies inside this shape centered at \var{x}, \var{y}.
+
+\mark{Shape}
+\scheme{Shape :: class}
+
+Shape is the base type for all shapes, but it does not implement \link{shape^}. It has 2 fields that affect how it acts
+
+\var{center-x} - The x offset used to calculate the absolute position of this shape. Defaults to 0.
+\var{center-y} - The y offset used to calculate the absolute position of this shape. Defaults to 0.
+
+A shape's absolute position is calculated by \var{object-x} + \var{center-x}, \var{object-y} + \var{center-y}. If \var{center-x} and \var{center-y} are not changed the coordinates reduce to simply \var{object-x}, \var{object-y}.
+
+There are 3 predefined shapes provided by game.ss: Point, Circle, and Rectangle.
+
+\mark{Point}
+\scheme{Point :: class}
+
+Point derives from \link{Shape} and represents a single point in space. It has no fields of its own so creation requires no extra arguments, unless you want to provide center-x and center-y.
+
+\begin{schemedisplay}
+(make Point) ;; a regular point
+(make Point (center-x 3) (center-y -2)) ;; a point offset by 3, -2
+\end{schemedisplay}
+
+\mark{Circle}
+\scheme{Circle :: class}
+
+Circle derives from \link{Shape} and represents a circular area in space. Its only field is radius.
+
+\begin{schemedisplay}
+(make Circle (radius 5)) ;; a circle with radius 5
+(make Circle (radius 5) (center-x 2) (center-y -3)) ;; a circle with radius 5 offset by 2, -3
+\end{schemedisplay}
+
+\mark{Rectangle}
+\scheme{Rectangle :: class}
+
+Rectangle derives from \link{Shape} and represents a rectangular area in space. Its fields are width and height.
+
+\begin{schemedisplay}
+;; a rectangle with a width of 5 and a height of 10
+(make Rectangle (width 5) (height 10))
+;; a rectangle with a width of 5 and a height of 10 offset by 2, -3
+(make Rectangle (width 5) (height 10) (center-x 2) (center-y -3))
+\end{schemedisplay}
+
+\mark{round*}
+\function{(round* float)}{int}
+
+Round \var{float} to an integer. This is useful to convert coordinates into values that can be passed to any drawing function.
+
+\begin{schemedisplay}
+(round* 2.3) -> 2
+(round* 2.8) -> 3
+\end{schemedisplay}
+
+\mark{calculate-angle}
+\function{(calculate-angle x1 y1 x2 y2)}{float}
+
+Calculate the angle from \var{x1},\var{y1} to \var{x2},\var{y2} using the arc tangent. This angle is normalized so that \degree{270} increases the y coordinate, which is farther "down" the screen.
+
+\mark{make-animation-from-files}
+\function{(make-animation-from-files files speed)}{Animation}
+
+\scheme{files :: list-of filename}\newline
+\scheme{speed :: int}
+
+Create an animation from the set of \var{files}.
+
+\mark{make-world}
+\function{(make-world [width height] [depth] [mode])}{World}
+
+Create a new world. You can optionally give \var{width}, \var{height}, \var{depth}, and \var{mode}.
+
+\var{width} - Width of the screen. Default is 640.\newline
+\var{height} - Height of the screen. Default is 480.\newline
+\var{depth} - Bits per pixel. Default is 16\newline
+\var{mode} - \scheme{'WINDOWED} or \scheme{'FULLSCREEN}. Make a window or use the entire screen. Defaults to \scheme{'WINDOWED}.
+
+\begin{schemedisplay}
+;; create a regular world
+(define world (make-world))
+
+;; use a window size of 800x600
+(define world (make-world 800 600))
+\end{schemedisplay}
+
+\mark{add-object}
+\function{(add-object world obj)}{void}
+
+Helper function to add \var{obj} to \var{world}.
+
+\mark{get-mouse-x}
+\function{(get-mouse-x)}{int}
+
+Return the current x coordinate of the mouse.
+
+\mark{get-mouse-y}
+\function{(get-mouse-y)}{int}
+
+Return the current y coordinate of the mouse.
+
+\mark{me}
+\syntax{me}
+
+A reference to the current object, much like \var{this} in Java/C++ or \var{self} in Ruby/Python.
+
+\mark{Cosine}
+\function{Cosine angle}{float}
+
+Returns the cosine of angle, specified in degrees from 0-360.
+
+\mark{Sine}
+\function{Sine angle}{float}
+
+Returns the sine of an angle, specified in degrees from 0-360.
+
+\mark{left-clicking?}
+\function{(left-clicking?)}{boolean}
+
+Returns #t if the left mouse button is being clicked.
+
+\mark{right-clicking?}
+\function{(right-clicking?)}{boolean}
+
+Returns #t if the right mouse button is being clicked.
+
+\mark{get-mouse-movement}
+\function{(get-mouse-movement)}{(values x y)}
+
+Returns the last movement of the mouse as an x,y pair. See \link{get-mickeys} for more details.
+
+\mark{constant}
+\syntax{(constant id expression)}
+
+Define \var{id} to be \var{expression} and \var{id} cannot be mutated.
+
+\mark{define-object}
+\syntax{(define-object name (inherits ...) (vars ...) body ...)}
+
+Define a new object that derives from \link{Basic}. You can use this syntax if you do not want to create a class by hand. \var{(inherits ...)} is a list of variables to inherit from Basic( x, y, and/or phase ). \var{(vars ...)} is a list of variables private to this object. \var{body ...} is any normal scheme expression.
+
+To define methods use \var{define}. Methods that should override methods in \link{Basic} will be handled automatically as long as they are declared in the form \scheme{(define (name ...) ...)}.
+
+\begin{schemedisplay}
+;; define an object that moves right as time goes on
+(define-object foo (x y) ()
+  (define (tick world)
+    (set! x (add1 x)))
+
+  (define (draw world buffer)
+    (circle-fill buffer x y 4 (color 255 0 0)))
+  )
+\end{schemedisplay}
+
+When an object defined by \var{define-object} is created a method \var{create} is run immediately with no arguments. In this function you can initialize variables and do whatever else.
+\begin{schemedisplay}
+;; the example from above but set the radius in a variable
+(define-object foo (x y) (radius)
+
+  (constant five 5)
+
+  (define (create)
+    (set! radius five))
+
+  (define (tick world)
+    (set! x (add1 x)))
+
+  (define (draw world buffer)
+    (circle-fill buffer x y radius (color 255 0 0)))
+  )
+\end{schemedisplay}
+
+Here \var{counter} is set to 5 when the object is created. Also you can see a usage of \link{constant}.
+
+\mark{define-generator}
+\syntax{(define-generator name (every expr proc))}
+
+\var{define-generator} defines an object that derives from \link{Basic} like \link{define-object} except a generator's sole purpose in life is to execute a function every time a certain amount of time has passed by. This is useful for adding objects to the universe in descrete steps.
+
+\begin{schemedisplay}
+(define-generator thing
+
+  ;; add something every 10 ticks
+  (every 10 (lambda (world)
+	      (add-object world (make something))))
+
+  ;; add something-else every 20 ticks
+  (every 20 (lambda (world)
+              (add-object world (make something-else))))
+
+  ;; add another at random
+  (every (random 100) (lambda (world)
+                        (add-object world (make another))))
+  )
+\end{schemedisplay}
+
+To use a generator, create one and add it to the world.
+
+\begin{schemedisplay}
+(add-object world (make thing))
+\end{schemedisplay}
+
+\mark{say}
+\syntax{(say obj method args ...)}{any}
+
+Ask \var{obj} to perform a \var{method} and pass \var{args} to it. This works like normal method invocation except if \var{obj} does not have a method named \var{method} or accepts a different number of args then no function will be called. This can be a source of confusion as no warning or error will be printed, the method will just be silently ignored.
+
+\begin{schemedisplay}
+(define obj (make my-object))
+;; tell obj to say hello
+(say obj hello)
+\end{schemedisplay}
+
+\mark{is-a?}
+\function{(is-a? obj class)}{boolean}
+
+Returns #t if obj has a type of \var{class}.
+
+\mark{make}
+\syntax{(make class args ...)}{object}
+
+Create a new object whose type is \var{class}. \var{args ...} should be a list of name/value s-expressions which initialize some field of the object.
+
+\begin{schemedisplay}
+(define-object my-object (x y) (age) (void))
+(make my-object (x 5) (y 10) (age 18))
+\end{schemedisplay}
+
+\mark{start}
+\function{(start world [before] [after])}{void}
+
+\var{before :: (lambda (world) ...)}\newline
+\var{after :: (lambda (world) ...)}
+
+Given a world object this method will create the graphics context and start the game. If given \var{before} is executed immediately before the main game loop is executed and \var{after} is executed after the game ends. These methods allow you to perform arbitrary initialization that you could not otherwise do before the \var{start} method is called. I.e, you cannot call an image related function before \var{start} becuase the graphics context does not exist yet.
+
+\begin{schemedisplay}
+;; define blue, but set it in the before method when it is ok to do so
+(define world (make-world))
+(define blue #f)
+(start world (lambda (w) (set! blue (color 0 0 255))))
+\end{schemedisplay}
+
+

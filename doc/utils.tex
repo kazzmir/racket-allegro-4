@@ -1,0 +1,279 @@
+\scheme{(require (planet "util.ss" ("kazzmir" "allegro.plt")))}
+
+Function list
+
+\makelink{easy-init}
+\makelink{easy-exit}
+\makelink{blend-palette}
+\makelink{frames-per-second}
+\makelink{game-loop}
+\makelink{set-color-conversion!}
+\makelink{for-each-pixel}
+\makelink{apply-matrix}
+\makelink{get-transformation-matrix}
+\makelink{get-camera-matrix}
+\makelink{persp-project}
+\makelink{set-projection-viewport}
+\makelink{polygon-z-normal}
+\makelink{set-add-blender!}
+\makelink{set-alpha-blender!}
+\makelink{set-burn-blender!}
+\makelink{Sine}
+\makelink{Cosine}
+\makelink{calculate-normal-angle}
+\makelink{calculate-angle}
+\makelink{set-color-blender!}
+\makelink{set-difference-blender!}
+\makelink{set-dissolve-blender!}
+\makelink{set-dodge-blender!}
+\makelink{set-drawing-mode-solid!}
+\makelink{set-drawing-mode-translucent!}
+\makelink{set-drawing-mode-xor!}
+\makelink{set-hue-blender!}
+\makelink{set-invert-blender!}
+\makelink{set-luminance-blender!}
+\makelink{set-multiply-blender!}
+\makelink{set-saturation-blender!}
+\makelink{set-screen-blender!}
+\makelink{set-trans-blender!}
+\makelink{set-write-alpha-blender!}
+
+\mark{easy-init}
+\function{(easy-init width height depth [mode])}{void}
+
+Start up the Allegro environment and create a graphics window. The lowerlevel mechanisms to start up the Allegro environment are currently not provided by this package, you must use easy-init to instantiate a graphics context.
+
+\var{width} and \var{height} are the width and height of the graphics context, respectively. Typical width/height pairs are
+\newline
+\num{640} \num{480}\newline
+\num{800} \num{600}\newline
+\num{1024} \num{768}\newline
+\num{1240} \num{1024}\newline
+
+\var{depth} is the number of bits per pixel. Possible choices are
+\newline
+\num{15} - 32,768 possible colors
+\newline
+\num{16} - 65,536 possible colors
+\newline
+\num{24} - 16,777,216 possible colors, without the alpha channel
+\newline
+\num{32} - 16,777,216 possible colors, with the alpha channel
+\newline
+
+\var{mode} can be one of the following
+\begin{itemize}
+	\item{\scheme|'WINDOWED| - Graphics context is a window}
+	\item{\scheme|'FULLSCREEN| - Use entire monitor for graphics context}
+\end{itemize}
+
+\mark{easy-exit}
+\function{(easy-exit)}{void}
+
+Shut down the Allegro engine and destroy the current graphics context. It is not safe to use any Allegro function after this, but you can call \link{easy-init} again.
+
+\mark{blend-palette}
+\function{(blend-palette start-color end-color num-color)}{list-of num}
+
+Returns a list of colors that can be used as pixel values. The colors are
+calculated by interpolating the individual pixel components( red, green, blue
+) from start color to end color. This is an easy way to make a color gradient.
+
+\begin{schemedisplay}
+;; Make a list of 10 greys from black to white.
+(blend-palette (color 0 0 0) (color 255 255 255) 10)
+\end{schemedisplay}
+
+\mark{frames-per-second}
+\function{(frames-per-second num)}{num}
+\newline
+\qfunction{(fps num)}{num}
+
+Returns a value that can be given to \link{game-loop} for how fast a game will run. \var{num} is the number of logic cycles per second to run the game at.
+
+\mark{game-loop}
+\function{(game-loop logic-proc draw-proc game-delay)}{void}
+
+The de-facto game loop which should satisfy most real-time game requirements. After enough time has passed, specified by \var{game-delay}, the \var{logic-proc} function will be run specifically to create some side-affects. After at least one \var{logic-proc} cycle has occured \var{draw-proc} will be executed to display the current state of the game on the graphics context. \var{game-loop} will loop until \var{logic-proc} returns #t.
+
+\var{logic-proc} :: \scheme{(lambda () ...)}\newline
+\var{draw-proc} :: \scheme{(lambda (buffer) ...)}\newline
+\var{game-delay} :: \scheme{num}\newline
+
+The buffer passed to draw-proc is an \link{image} that is safe to draw on. After the draw-proc is run this image will be copied to the screen so any previous data on the screen will be lost. It is upto the programmer to retain the state of the universe to be drawn on the buffer during the draw-proc. See the \link{examples} chapter for an idea on how to use game-loop.
+
+\mark{set-color-conversion!}
+\function{(set-color-conversion! arg)}{void}
+
+Should not be needed by regular users.
+
+\mark{apply-matrix}
+\function{(apply-matrix matrix x y z)}{(values x y z)}
+
+Apply \var{matrix} to the coordinates \var{x}, \var{y}, \var{z}. The result is a new set of 3d coordinates.
+
+\mark{get-transformation-matrix}
+\function{(get-transformation-matrix scale x-rotation y-rotation z-rotation x y z)}{matrix}
+
+Create a matrix that will rotate coordinates by \var{x-rotation}, \var{y-rotation}, \var{z-rotation}, scale the coordinates by \var{scale}, and translate the coordinates by \var{x}, \var{y}, \var{z}. The result is a matrix, which is an opaque type.
+
+\mark{get-camera-matrix}
+\function{(get-camera-matrix x y z xfront yfront zfront xup yup zup fov aspect)}{matrix}
+
+Constructs a camera matrix for translating world-space objects into a normalised view space, ready for the perspective projection. The x, y, and z parameters specify the camera position, xfront, yfront, and zfront are the 'in front' vector specifying which way the camera is facing (this can be any length: normalisation is not required), and xup, yup, and zup are the 'up' direction vector.  The fov parameter specifies the field of view (ie. width of the camera focus) in binary, 256 degrees to the circle format. For typical projections, a field of view in the region 32-48 will work well. 64 (90°) applies no extra scaling - so something which is one unit away from the viewer will be directly scaled to the viewport. A bigger FOV moves you closer to the viewing plane, so more objects will appear. A smaller FOV moves you away from the viewing plane, which means you see a smaller part of the world.  Finally, the aspect ratio is used to scale the Y dimensions of the image relative to the X axis, so you can use it to adjust the proportions of the output image (set it to 1 for no scaling - but keep in mind that the projection also performs scaling according to the viewport size).  Typically, you will pass (float)w/(float)h, where w and h are the parameters you passed to \link{set-projection-viewport}.
+
+\mark{persp-project}
+\function{(persp-project x y z)}{(values x y)}
+
+Projects the 3d point (\var{x}, \var{y}, \var{z}) onto the 2d space as defined by \link{set-projection-viewport}.
+
+\mark{set-projection-viewport}
+\function{(set-projection-viewport x1 y1 x2 y2)}{void}
+
+Sets the viewport used to scale the output of the \link{persp-project} function. Pass the dimensions of the screen area you want to draw onto, which will typically be 0, 0, window width, and window height. Also don't forget to pass an appropriate aspect ratio to \link{get-camera-matrix} later. The width and height you specify here will determine how big your viewport is in 3d space. So if an object in your 3D space is w units wide, it will fill the complete screen when you run into it (i.e., if it has a distance of 1.0 after the camera matrix was applied. The fov and aspect-ratio parameters to \link{get-camera-matrix} also apply some scaling though, so this isn't always completely true). If you pass -1/-1/2/2 as parameters, no extra scaling will be performed by the projection.
+
+\mark{polygon-z-normal}
+\function{(polygon-z-normal v1 v2 v3)}{float}
+
+\var{v1}, \var{v2}, and \var{v3} all have the type \link{v3d}.
+
+Finds the Z component of the normal vector to the specified three vertices (which must be part of a convex polygon). This is used mainly in back-face culling. The back-faces of closed polyhedra are never visible to the viewer, therefore they never need to be drawn. This can cull on average half the polygons from a scene. If the normal is negative the polygon can safely be culled. If it is zero, the polygon is perpendicular to the screen.  
+
+However, this method of culling back-faces must only be used once the X and Y coordinates have been projected into screen space using \link{persp-project} (or if an orthographic (isometric) projection is being used). Note that this function will fail if the three vertices are co-linear (they lie on the same line) in 3D space.
+
+\mark{set-add-blender!}
+\function{(set-add-blender! red green blue alpha)}{void}
+
+Enables an additive blender mode for combining translucent or lit truecolor pixels.
+
+\mark{set-alpha-blender!}
+\function{(set-alpha-blender! red green blue alpha)}{void}
+
+Enables the special alpha-channel blending mode, which is used for drawing 32-bit RGBA sprites. After calling this function, you can use draw_trans_sprite() or draw_trans_rle_sprite() to draw a 32-bit source image onto any hicolor or truecolor destination. The alpha values will be taken directly from the source graphic, so you can vary the solidity of each part of the image. You can't use any of the normal translucency functions while this mode is active, though, so you should reset to one of the normal blender modes (eg. set_trans_blender()) before drawing anything other than 32-bit RGBA sprites.
+
+\mark{set-burn-blender!}
+\function{(set-burn-blender! red green blue alpha)}{void}
+
+Enables a burn blender mode for combining translucent or lit truecolor pixels.  Here the lightness values of the colours of the source image reduce the lightness of the destination image, darkening the image.
+
+\mark{set-color-blender!}
+\function{(set-color-blender! red green blue alpha)}{void}
+
+Enables a color blender mode for combining translucent or lit truecolor pixels.
+Applies only the hue and saturation of the source image to the destination
+image. The luminance of the destination image is not affected.
+
+\mark{set-difference-blender!}
+\function{(set-difference-blender! red green blue alpha)}{void}
+
+Enables a difference blender mode for combining translucent or lit truecolor
+pixels. This makes an image which has colours calculated by the difference
+between the source and destination colours.
+
+\mark{set-dissolve-blender!}
+\function{(set-dissolve-blender! red green blue alpha)}{void}
+
+Enables a dissolve blender mode for combining translucent or lit truecolor
+pixels. Randomly replaces the colours of some pixels in the destination image
+with those of the source image. The number of pixels replaced depends on the
+alpha value (higher value, more pixels replaced; you get the idea :).
+
+\mark{set-dodge-blender!}
+\function{(set-dodge-blender! red green blue alpha)}{void}
+
+Enables a dodge blender mode for combining translucent or lit truecolor pixels.
+The lightness of colours in the source lighten the colours of the destination.
+White has the most effect; black has none.
+
+\mark{set-drawing-mode-solid!}
+\function{(set-drawing-mode-solid!)}{void}
+
+Pixels are drawn opaquely, meaning a pixel with an RGB color of 200,100,32 will be seen exactly as 200,100,32.
+
+\mark{set-drawing-mode-translucent!}
+\function{(set-drawing-mode-translucent!)}{void}
+
+Pixels are drawn translucently, meaning a pixel with RGB color of 200,100,32 will be blended together with the pixel that already exists at its location.
+
+\mark{set-drawing-mode-xor!}
+\function{(set-drawing-mode-xor!)}{void}
+
+Pixels are drawn using an xor operation so if you draw the same shape twice it will be erased the second time.
+
+\mark{set-hue-blender!}
+\function{(set-hue-blender! red green blue alpha)}{void}
+
+Enables a hue blender mode for combining translucent or lit truecolor pixels. This applies the hue of the source to the destination.
+
+\mark{set-invert-blender!}
+\function{(set-invert-blender! red green blue alpha)}{void}
+
+Enables an invert blender mode for combining translucent or lit truecolor pixels. Blends the inverse (or negative) colour of the source with the destination.
+
+\mark{set-luminance-blender!}
+\function{(set-luminance-blender! red green blue alpha)}{void}
+
+Enables a luminance blender mode for combining translucent or lit truecolor pixels. Applies the luminance of the source to the destination.  The colour of the destination is not affected.
+
+\mark{set-multiply-blender!}
+\function{(set-multiply-blender! red green blue alpha)}{void}
+
+Enables a multiply blender mode for combining translucent or lit truecolor pixels. Combines the source and destination images, multiplying the colours to produce a darker colour. If a colour is multiplied by white it remains unchanged; when multiplied by black it also becomes black.
+
+\mark{set-saturation-blender!}
+\function{(set-saturation-blender! red green blue alpha)}{void}
+
+Enables a saturation blender mode for combining translucent or lit truecolor pixels. Applies the saturation of the source to the destination image.
+
+\mark{set-screen-blender!}
+\function{(set-screen-blender! red green blue alpha)}{void}
+
+Enables a screen blender mode for combining translucent or lit truecolor pixels. This blender mode lightens the colour of the destination image by multiplying the inverse of the source and destination colours. Sort of like the opposite of the multiply blender mode.
+
+\mark{set-trans-blender!}
+\function{(set-trans-blender! red green blue alpha)}{void}
+
+Enables a linear interpolator blender mode for combining translucent or lit truecolor pixels.
+\newline
+0 <= \var{red} <= 255\newline
+0 <= \var{green} <= 255\newline
+0 <= \var{blue} <= 255\newline
+0 <= \var{alpha} <= 255\newline
+
+For alpha 0 is translucent and 255 is opaque.
+
+\mark{set-write-alpha-blender!}
+\function{(set-write-alpha-blender! red green blue alpha)}{void}
+
+Enables the special alpha-channel editing mode, which is used for drawing alpha channels over the top of an existing 32-bit RGB sprite, to turn it into an RGBA format image. After calling this function, you can set the drawing mode to DRAW_MODE_TRANS and then write draw color values (0-255) onto a 32-bit image.  This will leave the color values unchanged, but alter the alpha to whatever values you are writing. After enabling this mode you can also use draw_trans_sprite() to superimpose an 8-bit alpha mask over the top of an existing 32-bit sprite.
+
+\mark{Cosine}
+\function{(Cosine angle)}{float}
+
+Calculate the cosine of angle specified in degrees from 0-360
+
+\mark{Sine}
+\function{(Sine angle)}{float}
+
+Calculate the sine of an angle specified in degrees from 0-360
+
+\mark{calculate-angle}
+\function{(calculate-angle x1 y1 x2 y2)}{float}
+
+Calculate the angle from \var{x1},\var{y1} to \var{x2},\var{y2} using the arc tangent. This only returns the vector in the first quadrant. Normally you should use \link{calculate-normal-angle}.
+
+\mark{calculate-normal-angle}
+\function{(calculate-normal-angle x1 y1 x2 y2)}{float}
+
+Calculate the angle from \var{x1},\var{y1} to \var{x2},\var{y2} using the arc tangent. This angle is normalized so that \degree{270} increases the y coordinate, which is farther "down" the screen.
+
+\mark{for-each-pixel}
+\function{(for-each-pixel image func)}{void}
+
+Loop over each pixel in image and call \var{func} on it. \var{func} should take 2 arguments, the x and y coordinate currently being looped over. It is ok to modify image in the \var{func} method.
+
+\begin{schemedisplay}
+(for-each-pixel some-image
+  (lambda (x y)
+    (printf "pixel at ~a,~a is ~a\n" x y (getpixel some-image x y))))
+\end{schemedisplay}
